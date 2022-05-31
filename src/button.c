@@ -106,6 +106,7 @@ QueueHandle_t pulled_button_init(unsigned long long pin_select, gpio_pull_mode_t
 
     // Configure the pins
     gpio_config_t io_conf;
+    memset(&io_conf, 0x00, sizeof io_conf);
     io_conf.mode = GPIO_MODE_INPUT;
     io_conf.pull_up_en = (pull_mode == GPIO_PULLUP_ONLY || pull_mode == GPIO_PULLUP_PULLDOWN);
     io_conf.pull_down_en = (pull_mode == GPIO_PULLDOWN_ONLY || pull_mode == GPIO_PULLUP_PULLDOWN);;
