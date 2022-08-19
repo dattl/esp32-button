@@ -24,6 +24,7 @@ typedef struct {
 int pin_count = -1;
 debounce_t * debounce;
 QueueHandle_t queue;
+TaskHandle_t button_task_handle = NULL;
 
 static void update_button(debounce_t *d) {
     d->history = (d->history << 1) | gpio_get_level(d->pin);
@@ -96,6 +97,13 @@ QueueHandle_t button_init(unsigned long long pin_select) {
     return pulled_button_init(pin_select, GPIO_FLOATING);
 }
 
+void button_deinit(void)
+{
+    vTaskDelete(button_task_handle);
+    vQueueDelete(queue);
+    free(debounce);
+}
+
 
 QueueHandle_t pulled_button_init(unsigned long long pin_select, gpio_pull_mode_t pull_mode)
 {
@@ -139,7 +147,7 @@ QueueHandle_t pulled_button_init(unsigned long long pin_select, gpio_pull_mode_t
     }
 
     // Spawn a task to monitor the pins
-    xTaskCreate(&button_task, "button_task", 4096, NULL, 10, NULL);
+    xTaskCreate(&button_task, "button_task", 4096, NULL, 10, &button_task_handle);
 
     return queue;
 }
